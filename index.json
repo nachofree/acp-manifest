@@ -31,9 +31,6 @@
 
   "connectors": [
 
-    //
-    // 1. HOTEL FINDER — PRODUCTION
-    //
     {
       "name": "ACP Hotel Finder",
       "connectorId": "acp.hotelbeds.provider.prod",
@@ -61,9 +58,6 @@
       }
     },
 
-    //
-    // 2. HOTEL FINDER — SANDBOX
-    //
     {
       "name": "ACP Hotel Finder (Sandbox)",
       "connectorId": "acp.hotelbeds.provider.sandbox",
@@ -91,9 +85,6 @@
       }
     },
 
-    //
-    // 3. ALL-INCLUSIVE REGISTRY — PRODUCTION
-    //
     {
       "name": "All-Inclusive Resort Registry",
       "connectorId": "acp.allinclusive.registry.prod",
@@ -121,9 +112,6 @@
       }
     },
 
-    //
-    // 4. ALL-INCLUSIVE REGISTRY — SANDBOX
-    //
     {
       "name": "All-Inclusive Resort Registry (Sandbox)",
       "connectorId": "acp.allinclusive.registry.sandbox",
