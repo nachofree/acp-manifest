@@ -9,7 +9,7 @@
   },
   "api": {
     "type": "openapi",
-    "url": "https://uncodified-maricela-unhectic.ngrok-free.dev/openapi.yaml"
+    "url": "https://nachofree.github.io/acp-manifest/openapi.yaml"
   },
   "contact_email": "support@yourdomain.com",
   "legal_info_url": "https://uncodified-maricela-unhectic.ngrok-free.dev/terms",
