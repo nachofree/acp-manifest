@@ -2,17 +2,19 @@
   "@context": [
     "https://schema.org",
     {
-      "acp": "https://acp.standard.schema.org"
+      "acp": "https://acp.schema.org"
     }
   ],
 
   "@type": "acp:Registry",
+
   "registryName": "ACP Travel Registry",
   "registryId": "acp.travel.registry",
-  "description": "A federated registry of travel-related ACP connectors, including hotel availability, all-inclusive resorts, and booking services.",
+  "description": "Federated registry of ACP hotel connectors including sandbox and production environments.",
 
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2025-11-04T00:00:00Z",
+
   "publisher": {
     "@type": "Organization",
     "name": "Your Company Name",
@@ -29,22 +31,21 @@
 
   "connectors": [
 
+    //
+    // 1. HOTEL FINDER — PRODUCTION
+    //
     {
       "name": "ACP Hotel Finder",
-      "connectorId": "acp.hotelbeds.provider",
-      "description": "Provides hotel search and booking capabilities using Hotelbeds inventory.",
-      
-      "manifestUrl": "https://acp.yourdomain.com/hotels/manifest.json",
+      "connectorId": "acp.hotelbeds.provider.prod",
+      "description": "Hotel availability and booking using Hotelbeds production inventory.",
+
+      "manifestUrl": "https://nachofree.github.io/acp-manifest/manifest.json",
       "schemaVersion": "1.0",
 
-      "categories": [
-        "travel",
-        "hotels",
-        "lodging",
-        "availability",
-        "booking"
-      ],
+      "environment": "production",
+      "sandbox": false,
 
+      "categories": ["travel", "hotels", "lodging", "availability", "booking"],
       "regions": ["ES", "US", "MX", "EU"],
       "languages": ["en", "es"],
 
@@ -60,22 +61,51 @@
       }
     },
 
+    //
+    // 2. HOTEL FINDER — SANDBOX
+    //
+    {
+      "name": "ACP Hotel Finder (Sandbox)",
+      "connectorId": "acp.hotelbeds.provider.sandbox",
+      "description": "Hotel availability and booking in the Hotelbeds sandbox environment (test data only).",
 
+      "manifestUrl": "https://nachofree.github.io/acp-manifest/manifest.json",
+      "schemaVersion": "1.0",
+
+      "environment": "sandbox",
+      "sandbox": true,
+
+      "categories": ["travel", "hotels", "lodging", "availability", "booking"],
+      "regions": ["ES", "US", "MX", "EU"],
+      "languages": ["en", "es"],
+
+      "capabilities": {
+        "availability": true,
+        "checkout": true
+      },
+
+      "provenance": {
+        "source": "Hotelbeds",
+        "integrationType": "wholesale",
+        "sandbox": true
+      }
+    },
+
+    //
+    // 3. ALL-INCLUSIVE REGISTRY — PRODUCTION
+    //
     {
       "name": "All-Inclusive Resort Registry",
-      "connectorId": "acp.allinclusive.registry",
-      "description": "Curated feed of verified all-inclusive resorts with AI-friendly structured guarantees.",
-      
+      "connectorId": "acp.allinclusive.registry.prod",
+      "description": "Curated feed of verified all-inclusive resorts with production booking capabilities.",
+
       "manifestUrl": "https://acp.yourdomain.com/allinclusive/manifest.json",
       "schemaVersion": "1.0",
 
-      "categories": [
-        "travel",
-        "resorts",
-        "all-inclusive",
-        "bundles"
-      ],
+      "environment": "production",
+      "sandbox": false,
 
+      "categories": ["travel", "resorts", "all-inclusive", "bundles"],
       "regions": ["Caribbean", "MX", "ES", "Mediterranean"],
       "languages": ["en"],
 
@@ -85,9 +115,39 @@
       },
 
       "provenance": {
-        "source": "Hotelbeds + Direct Partner Properties",
+        "source": "Hotelbeds + Direct Partners",
         "integrationType": "curated",
         "sandbox": false
+      }
+    },
+
+    //
+    // 4. ALL-INCLUSIVE REGISTRY — SANDBOX
+    //
+    {
+      "name": "All-Inclusive Resort Registry (Sandbox)",
+      "connectorId": "acp.allinclusive.registry.sandbox",
+      "description": "Test-only version of the All-Inclusive resort registry, using sandbox inventory.",
+
+      "manifestUrl": "https://acp.yourdomain.com/allinclusive/manifest.sandbox.json",
+      "schemaVersion": "1.0",
+
+      "environment": "sandbox",
+      "sandbox": true,
+
+      "categories": ["travel", "resorts", "all-inclusive", "bundles"],
+      "regions": ["Caribbean", "MX", "ES", "Mediterranean"],
+      "languages": ["en"],
+
+      "capabilities": {
+        "availability": true,
+        "checkout": true
+      },
+
+      "provenance": {
+        "source": "Hotelbeds + Direct Partners",
+        "integrationType": "curated",
+        "sandbox": true
       }
     }
   ]
