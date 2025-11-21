@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "name_for_human": "Hotel Feed Service",
+  "name_for_agent": "hotel_feed_service",
+  "description_for_human": "Provides normalized hotel listings, detailed content, and booking rates for agentic commerce interactions.",
+  "description_for_agent": "Query `/hotels/feed` to fetch hotel listings and rates, `/hotels/{hotel_id}/details` for detailed content, and `/checkout/create` to initialize bookings.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://uncodified-maricela-unhectic.ngrok-free.dev"
+  },
+  "contact_email": "support@yourdomain.com",
+  "legal_info_url": "https://uncodified-maricela-unhectic.ngrok-free.dev/terms",
+  "capabilities": {
+    "commerce": {
+      "type": "feed",
+      "resource": "hotel",
+      "endpoints": {
+        "feed": "/hotels/feed",
+        "details": "/hotels/{hotel_id}/details",
+        "checkout": "/checkout/create"
+      }
+    }
+  },
+  "metadata": {
+    "version": "2025-10-24",
+    "base_url": "https://uncodified-maricela-unhectic.ngrok-free.dev",
+    "keywords": [
+      "hotel",
+      "travel",
+      "booking",
+      "commerce",
+      "feed",
+      "checkout",
+      "acp",
+      "agent",
+      "normalized-schema",
+      "structured-feed",
+      "machine-readable",
+      "api-registry",
+      "openapi",
+      "ai-integration",
+      "semantic-commerce",
+      "llm-plugin",
+      "hotelbeds",
+      "lodging",
+      "hospitality"
+    ]
+  }
+}
+
