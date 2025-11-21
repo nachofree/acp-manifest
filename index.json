@@ -1,0 +1,95 @@
+{
+  "@context": [
+    "https://schema.org",
+    {
+      "acp": "https://acp.standard.schema.org"
+    }
+  ],
+
+  "@type": "acp:Registry",
+  "registryName": "ACP Travel Registry",
+  "registryId": "acp.travel.registry",
+  "description": "A federated registry of travel-related ACP connectors, including hotel availability, all-inclusive resorts, and booking services.",
+
+  "version": "1.0.0",
+  "updated": "2025-11-04T00:00:00Z",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Your Company Name",
+    "url": "https://yourdomain.com",
+    "contactEmail": "support@yourdomain.com"
+  },
+
+  "trust": {
+    "verifiedBy": "self",
+    "integrity": "unsigned",
+    "uptime": "unknown",
+    "sla": "none"
+  },
+
+  "connectors": [
+
+    {
+      "name": "ACP Hotel Finder",
+      "connectorId": "acp.hotelbeds.provider",
+      "description": "Provides hotel search and booking capabilities using Hotelbeds inventory.",
+      
+      "manifestUrl": "https://acp.yourdomain.com/hotels/manifest.json",
+      "schemaVersion": "1.0",
+
+      "categories": [
+        "travel",
+        "hotels",
+        "lodging",
+        "availability",
+        "booking"
+      ],
+
+      "regions": ["ES", "US", "MX", "EU"],
+      "languages": ["en", "es"],
+
+      "capabilities": {
+        "availability": true,
+        "checkout": true
+      },
+
+      "provenance": {
+        "source": "Hotelbeds",
+        "integrationType": "wholesale",
+        "sandbox": false
+      }
+    },
+
+
+    {
+      "name": "All-Inclusive Resort Registry",
+      "connectorId": "acp.allinclusive.registry",
+      "description": "Curated feed of verified all-inclusive resorts with AI-friendly structured guarantees.",
+      
+      "manifestUrl": "https://acp.yourdomain.com/allinclusive/manifest.json",
+      "schemaVersion": "1.0",
+
+      "categories": [
+        "travel",
+        "resorts",
+        "all-inclusive",
+        "bundles"
+      ],
+
+      "regions": ["Caribbean", "MX", "ES", "Mediterranean"],
+      "languages": ["en"],
+
+      "capabilities": {
+        "availability": true,
+        "checkout": true
+      },
+
+      "provenance": {
+        "source": "Hotelbeds + Direct Partner Properties",
+        "integrationType": "curated",
+        "sandbox": false
+      }
+    }
+  ]
+}
+
