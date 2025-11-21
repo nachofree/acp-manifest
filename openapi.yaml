@@ -1,0 +1,417 @@
+openapi: 3.1.1
+info:
+  title: Hotel Feed & Checkout API
+  description: >
+    Provides normalized hotel listings and booking capabilities for
+    Agentic Commerce Protocol (ACP) integrations. Agents can query hotels
+    via `/hotels/feed` and initiate bookings via `/checkout/create`.
+  version: 1.0.0
+  contact:
+    email: support@yourdomain.com
+servers:
+  - url: "https://uncodified-maricela-unhectic.ngrok-free.dev"
+
+paths:
+  /hotels/feed:
+    get:
+      operationId: getHotelsFeed
+      summary: Get normalized hotel feed
+      description: |
+        Returns a list of hotels and rates in normalized schema format.
+        Supports optional filters for destination and date range.
+      parameters:
+        - name: destination
+          in: query
+          description: Filter by destination name or code
+          required: false
+          schema:
+            type: string
+        - name: checkIn
+          in: query
+          description: Desired check-in date (ISO 8601 format)
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: checkOut
+          in: query
+          description: Desired check-out date (ISO 8601 format)
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: A list of normalized hotel objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 2
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 19562
+                        name:
+                          type: string
+                          example: Hotel Nature Oviedo
+                        category:
+                          type: string
+                          example: 4 STARS
+                        destination:
+                          type: string
+                          example: Asturias
+                        location:
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                              example: 43.362631
+                            lon:
+                              type: number
+                              example: -5.859017
+                        rooms:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                example: FAMILY ROOM STANDARD
+                              rates:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    rateId:
+                                      type: string
+                                      example: "20190115|20190120|W|102|19562|FAM.ST|CG-BAR|BB"
+                                    price:
+                                      type: number
+                                      example: 821.93
+                                    board:
+                                      type: string
+                                      example: BED AND BREAKFAST
+                                    cancellation:
+                                      type: object
+                                      properties:
+                                        amount:
+                                          type: string
+                                          example: "185.97"
+                                        from:
+                                          type: string
+                                          example: "2019-01-13T23:59:00+01:00"
+                        source:
+                          type: object
+                          properties:
+                            provider:
+                              type: string
+                              example: hotelbeds
+                            version:
+                              type: string
+                              example: 2025_01
+                            normalizedAt:
+                              type: string
+                              format: date-time
+                              example: 2025-10-14T12:00:00Z
+
+ 
+  /hotels/{hotel_id}/details:
+    get:
+      operationId: getHotelDetails
+      summary: Get detailed hotel content
+      description: >
+        Retrieves detailed Hotelbeds content for a specific hotel,
+        including descriptions, images, facilities, and room details.
+        This data is typically cached and normalized.
+      parameters:
+        - name: hotel_id
+          in: path
+          required: true
+          description: The unique numeric ID of the hotel
+          schema:
+            type: integer
+            example: 19562
+      responses:
+        "200":
+          description: Hotel details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 19562
+                  name:
+                    type: string
+                    example: Hotel Nature Oviedo
+                  description:
+                    type: string
+                    example: A charming 4-star hotel located in the heart of Oviedo.
+                  address:
+                    type: string
+                    example: Calle San Francisco 5, 33003 Oviedo, Spain
+                  images:
+                    type: array
+                    items:
+                      type: string
+                      example: "https://photos.hotelbeds.com/giata/bigger/00/000762/000762a_hb_f_002.jpg"
+                  facilities:
+                    type: array
+                    items:
+                      type: string
+                      example: "24-hour reception"
+                  rooms:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          example: "DBL.ST"
+                        name:
+                          type: string
+                          example: "Double Standard"
+                        description:
+                          type: string
+                          example: "Spacious double room with ensuite bathroom."
+                        images:
+                          type: array
+                          items:
+                            type: string
+                            example: "https://photos.hotelbeds.com/giata/bigger/00/000762/000762a_hb_ro_053.jpg"
+                  source:
+                    type: object
+                    properties:
+                      provider:
+                        type: string
+                        example: hotelbeds
+                      version:
+                        type: string
+                        example: 2025_01
+                      normalizedAt:
+                        type: string
+                        format: date-time
+                        example: 2025-10-14T12:00:00Z
+        "404":
+          description: Hotel not found
+
+
+  /availability/search:
+    post:
+      operationId: searchAvailability
+      summary: Search hotel availability and retrieve rateKeys
+      description: >
+        Queries Hotelbeds for current rates and returns normalized room/rate data
+        suitable for Agentic Commerce Protocol inventory feeds.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - hotelId
+                - checkIn
+                - checkOut
+                - occupancies
+              properties:
+                hotelId:
+                  type: integer
+                  example: 19562
+                checkIn:
+                  type: string
+                  format: date
+                  example: 2025-12-13
+                checkOut:
+                  type: string
+                  format: date
+                  example: 2025-12-15
+                occupancies:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      roomId:
+                        type: string
+                        example: "DBL.ST"
+                      paxes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              enum: [AD, CH]
+                            age:
+                              type: integer
+                            name:
+                              type: string
+                            surname:
+                              type: string
+      responses:
+        "200":
+          description: List of available rates and rateKeys
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hotelId:
+                    type: integer
+                  hotelName:
+                    type: string
+                  currency:
+                    type: string
+                    example: EUR
+                  rates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        roomCode:
+                          type: string
+                          example: "DBL.ST"
+                        board:
+                          type: string
+                          example: "BB"
+                        rateKey:
+                          type: string
+                          example: "20251213|20251215|W|102|19562|DBL.ST|CG-BAR|BB||1~2~0||..."
+                        net:
+                          type: number
+                          example: 100.69
+                        paymentType:
+                          type: string
+                          example: AT_HOTEL
+        "404":
+          description: No hotels or rates found
+        "500":
+          description: Server error
+
+  /checkout/create:
+    post:
+      operationId: createCheckout
+      summary: Confirm a booking using a Hotelbeds rateKey
+      description: >
+        Creates a real Hotelbeds booking using a valid rateKey obtained from `/availability/search`.
+        Returns an ACP-style confirmation object.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - hotelId
+                - rateKey
+                - checkIn
+                - checkOut
+                - paymentToken
+                - holder
+                - occupancies
+              properties:
+                hotelId:
+                  type: integer
+                  example: 19562
+                rateKey:
+                  type: string
+                  example: "20251213|20251215|W|102|19562|DBL.ST|CG-BAR|BB||1~2~0||..."
+                checkIn:
+                  type: string
+                  format: date
+                  example: "2025-12-13"
+                checkOut:
+                  type: string
+                  format: date
+                  example: "2025-12-15"
+                paymentToken:
+                  type: string
+                  description: ACP-compatible payment authorization token
+                  example: "spt_test_123xyz"
+                holder:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: "Jane"
+                    surname:
+                      type: string
+                      example: "Doe"
+                    email:
+                      type: string
+                      format: email
+                      example: "jane@example.com"
+                    phone:
+                      type: string
+                      example: "+14155550123"
+                occupancies:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      roomId:
+                        type: string
+                        example: "DBL.ST"
+                      paxes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              enum: [AD, CH]
+                            age:
+                              type: integer
+      responses:
+        "200":
+          description: Booking confirmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: confirmed
+                  bookingReference:
+                    type: string
+                    example: "102-19693857"
+                  hotelId:
+                    type: string
+                    example: "19562"
+                  hotelName:
+                    type: string
+                    example: "Hotel Nature Oviedo"
+                  checkIn:
+                    type: string
+                    format: date
+                    example: "2025-12-13"
+                  checkOut:
+                    type: string
+                    format: date
+                    example: "2025-12-15"
+                  total:
+                    type: number
+                    example: 100.69
+                  currency:
+                    type: string
+                    example: EUR
+                  confirmedAt:
+                    type: string
+                    format: date-time
+                    example: 2025-11-03T22:46:16Z
+        "400":
+          description: Invalid request or payment token
+        "502":
+          description: Hotelbeds error response
+
+ 
