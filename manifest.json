@@ -1,19 +1,19 @@
-{
-  "schema_version": "1.0",
-  "name_for_human": "Hotel Feed Service",
-  "name_for_agent": "hotel_feed_service",
-  "description_for_human": "Provides normalized hotel listings, detailed content, and booking rates for agentic commerce interactions.",
-  "description_for_agent": "Query `/hotels/feed` to fetch hotel listings and rates, `/hotels/{hotel_id}/details` for detailed content, and `/checkout/create` to initialize bookings.",
-  "auth": {
-    "type": "none"
-  },
-  "api": {
-    "type": "openapi",
-    "url": "https://nachofree.github.io/acp-manifest/openapi.yaml"
-  },
-  "contact_email": "support@yourdomain.com",
-  "legal_info_url": "https://uncodified-maricela-unhectic.ngrok-free.dev/terms",
-  "capabilities": {
+  {
+    "schema_version": "1.0",
+    "name_for_human": "Hotel Feed Service",
+    "name_for_agent": "hotel_feed_service",
+    "description_for_human": "Provides normalized hotel listings, detailed content, and booking rates for agentic commerce interactions.",
+    "description_for_agent": "Query `/hotels/feed` to fetch hotel listings and rates, `/hotels/{hotel_id}/details` for detailed content, and `/checkout/create` to initialize bookings.",
+    "auth": {
+      "type": "none"
+    },
+    "api": {
+      "type": "openapi",
+      "url": "https://nachofree.github.io/acp-manifest/openapi.yaml"
+    },
+    "contact_email": "support@yourdomain.com",
+    "legal_info_url": "https://uncodified-maricela-unhectic.ngrok-free.dev/terms",
+    "capabilities": {
     "commerce": {
       "type": "feed",
       "resource": "hotel",
@@ -21,33 +21,117 @@
         "feed": "/hotels/feed",
         "details": "/hotels/{hotel_id}/details",
         "checkout": "/checkout/create"
+        },
+      "lifecycle": {
+        "retrieval": true,
+        "modification": true,
+        "cancellation": true
+        }
+      }
+    },
+    "tools": [
+    {
+      "name": "get_reservation",
+      "description": "Retrieve an existing reservation using the booking reference returned during checkout.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "Booking reference returned from /checkout/create."
+          },
+          "refreshFromSupplier": {
+            "type": "boolean",
+            "description": "Whether to fetch the latest status from Hotelbeds.",
+            "default": true
+          }
+        },
+        "required": ["reference"]
+      },
+      "openapi": {
+        "path": "/reservation/get",
+        "method": "post"
+      }
+    },
+    {
+      "name": "cancel_reservation",
+      "description": "Cancel an existing reservation or return penalties/refunds in dry-run mode.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "Booking reference returned from /checkout/create."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "If true, preview refund/penalty without cancelling.",
+            "default": false
+          }
+        },
+        "required": ["reference"]
+      },
+      "openapi": {
+        "path": "/reservation/cancel",
+        "method": "post"
+      }
+    },
+    {
+      "name": "modify_reservation",
+      "description": "Modify an existing reservation by rebooking new dates. Supports dry-run mode.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "Booking reference to modify."
+          },
+          "checkIn": {
+            "type": "string",
+            "description": "New check-in date (YYYY-MM-DD)."
+          },
+          "checkOut": {
+            "type": "string",
+            "description": "New check-out date (YYYY-MM-DD)."
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "If true, only compute price difference.",
+            "default": false
+          }
+        },
+        "required": ["reference", "checkIn", "checkOut"]
+      },
+      "openapi": {
+        "path": "/reservation/modify",
+        "method": "post"
       }
     }
-  },
-  "metadata": {
-    "version": "2025-10-24",
-    "base_url": "https://uncodified-maricela-unhectic.ngrok-free.dev",
-    "keywords": [
-      "hotel",
-      "travel",
-      "booking",
-      "commerce",
-      "feed",
-      "checkout",
-      "acp",
-      "agent",
-      "normalized-schema",
-      "structured-feed",
-      "machine-readable",
-      "api-registry",
-      "openapi",
-      "ai-integration",
-      "semantic-commerce",
-      "llm-plugin",
-      "hotelbeds",
-      "lodging",
-      "hospitality"
-    ]
+  ],
+    "metadata": {
+      "version": "2025-10-24",
+      "base_url": "https://uncodified-maricela-unhectic.ngrok-free.dev",
+      "keywords": [
+        "hotel",
+        "travel",
+        "booking",
+        "commerce",
+        "feed",
+        "checkout",
+        "acp",
+        "agent",
+        "normalized-schema",
+        "structured-feed",
+        "machine-readable",
+        "api-registry",
+        "openapi",
+        "ai-integration",
+        "semantic-commerce",
+        "llm-plugin",
+        "hotelbeds",
+        "lodging",
+        "hospitality"
+      ]
+    }
   }
-}
 

@@ -414,4 +414,200 @@ paths:
         "502":
           description: Hotelbeds error response
 
+  /reservation/get:
+    post:
+      operationId: getReservation
+      summary: Retrieve an existing reservation
+      description: >
+        Returns reservation details for a given booking reference.
+        Uses internal cache by default, but may refresh from Hotelbeds if requested.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reference]
+              properties:
+                reference:
+                  type: string
+                  description: Booking reference returned from /checkout/create
+                  example: "HB-ABC123"
+                refreshFromSupplier:
+                  type: boolean
+                  description: Returns the latest Hotelbeds status if true
+                  default: true
+      responses:
+        "200":
+          description: Reservation retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reservation:
+                    type: object
+                    properties:
+                      bookingReference:
+                        type: string
+                        example: "HB-ABC123"
+                      hotelId:
+                        type: string
+                        example: "19562"
+                      hotelName:
+                        type: string
+                        example: "Hotel Nature Oviedo"
+                      checkIn:
+                        type: string
+                        format: date
+                        example: "2025-12-13"
+                      checkOut:
+                        type: string
+                        format: date
+                        example: "2025-12-15"
+                      total:
+                        type: number
+                        example: 821.93
+                      currency:
+                        type: string
+                        example: "EUR"
+                      status:
+                        type: string
+                        example: "confirmed"
+                  source:
+                    type: string
+                    example: "supplier"
+        "404":
+          description: Reservation not found
+
+  /reservation/cancel:
+    post:
+      operationId: cancelReservation
+      summary: Cancel an existing reservation
+      description: >
+        Cancels a reservation using the booking reference. Supports dry-run mode
+        to preview penalties without committing cancellation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reference]
+              properties:
+                reference:
+                  type: string
+                  description: Booking reference returned from /checkout/create
+                  example: "HB-ABC123"
+                dryRun:
+                  type: boolean
+                  description: If true, returns penalty/refund quote but does not cancel
+                  default: false
+      responses:
+        "200":
+          description: Cancellation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reservation:
+                    type: object
+                    properties:
+                      bookingReference:
+                        type: string
+                      hotelId:
+                        type: string
+                      status:
+                        type: string
+                        example: "cancelled"
+                  cancellation_result:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "cancelled"
+                      refundable_amount:
+                        type: number
+                        example: 0
+                      penalty_amount:
+                        type: number
+                        example: 821.93
+                      currency:
+                        type: string
+                        example: "EUR"
+                      dry_run:
+                        type: boolean
+                        example: false
+        "404":
+          description: Reservation not found
+
+  /reservation/modify:
+    post:
+      operationId: modifyReservation
+      summary: Modify an existing reservation
+      description: >
+        Searches availability for new dates and rebooks the reservation. Supports dry-run mode
+        to calculate price differences before performing modification.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reference, checkIn, checkOut]
+              properties:
+                reference:
+                  type: string
+                  description: Reservation to modify
+                  example: "HB-ABC123"
+                checkIn:
+                  type: string
+                  format: date
+                  example: "2025-12-20"
+                checkOut:
+                  type: string
+                  format: date
+                  example: "2025-12-22"
+                dryRun:
+                  type: boolean
+                  description: Only compute price difference, don’t rebook
+                  default: false
+      responses:
+        "200":
+          description: Modification completed or evaluated (dry-run)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  old_reservation:
+                    type: object
+                    properties:
+                      bookingReference:
+                        type: string
+                      status:
+                        type: string
+                        example: "modified"
+                  new_reservation:
+                    type: object
+                    nullable: true
+                    properties:
+                      bookingReference:
+                        type: string
+                      hotelId:
+                        type: string
+                      total:
+                        type: number
+                        example: 900.50
+                  price_difference:
+                    type: number
+                    example: 78.57
+                  dry_run:
+                    type: boolean
+                    example: false
+        "404":
+          description: Reservation not found
+
+
  
