@@ -5,7 +5,11 @@
     "description_for_human": "Provides normalized hotel listings, detailed content, and booking rates for agentic commerce interactions.",
     "description_for_agent": "Query `/hotels/feed` to fetch hotel listings and rates, `/hotels/{hotel_id}/details` for detailed content, and `/checkout/create` to initialize bookings.",
     "auth": {
-      "type": "none"
+      "type": "user_http",
+      "authorization_type": "bearer",
+      "verification_tokens": {
+      "openai": "REPLACE_WITH_YOUR_VERIFICATION_TOKEN"
+  }
     },
     "api": {
       "type": "openapi",
