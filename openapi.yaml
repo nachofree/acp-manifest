@@ -3,50 +3,53 @@ openapi: 3.1.1
 info:
   title: Hotel Feed & Reservation API
   description: >
-    Provides normalized hotel listings, availability search, booking checkout,
-    and full reservation management for ACP agent integrations.
-  version: 1.0.1
+    Provides normalized hotel listings, availability search,
+    checkout, and reservation management for ACP agent integrations.
+  version: 1.1.0
   contact:
     email: support@yourdomain.com
 
 servers:
   - url: https://uncodified-maricela-unhectic.ngrok-free.dev
 
+security:
+  - bearerAuth: []
+
 paths:
 
   ###############################################################
   #  Hotels Feed
   ###############################################################
-
   /hotels/feed:
     get:
       operationId: getHotelsFeed
       summary: Get normalized hotel feed
-      description: >
-        Returns normalized hotel listings and their available rooms/rates,
-        using your Hotelbeds normalization DSL.
       parameters:
         - name: destination
           in: query
-          schema: { type: string }
+          schema:
+            type: string
         - name: checkIn
           in: query
-          schema: { type: string, format: date }
+          schema:
+            type: string
+            format: date
         - name: checkOut
           in: query
-          schema: { type: string, format: date }
+          schema:
+            type: string
+            format: date
       responses:
-        '200':
+        "200":
           description: Normalized hotel feed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HotelFeedResponse'
+                $ref: "#/components/schemas/HotelFeedResponse"
 
   ###############################################################
   #  Hotel Details
   ###############################################################
-
   /hotels/{hotel_id}/details:
     get:
       operationId: getHotelDetails
@@ -55,73 +58,71 @@ paths:
         - name: hotel_id
           in: path
           required: true
-          schema: { type: integer }
+          schema:
+            type: integer
       responses:
-        '200':
-          description: Hotel details retrieved successfully
+        "200":
+          description: Hotel details found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HotelDetails'
-        '404':
+                $ref: "#/components/schemas/HotelDetails"
+        "404":
           description: Hotel not found
 
   ###############################################################
   #  Availability Search
   ###############################################################
-
   /availability/search:
     post:
       operationId: searchAvailability
-      summary: Search hotel availability and retrieve rateKeys
+      summary: Search availability for a specific hotel
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AvailabilityRequest'
+              $ref: "#/components/schemas/AvailabilityRequest"
       responses:
-        '200':
-          description: Available rates
+        "200":
+          description: Availability results
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AvailabilityResponse'
-        '404':
-          description: No hotels or rates found
-        '500':
+                $ref: "#/components/schemas/AvailabilityResponse"
+        "404":
+          description: No availability found
+        "500":
           description: Server error
 
   ###############################################################
   #  Checkout / Booking Creation
   ###############################################################
-
   /checkout/create:
     post:
       operationId: createCheckout
-      summary: Confirm a booking using Hotelbeds rateKey
+      summary: Create a reservation using a Hotelbeds rateKey
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CheckoutRequest'
+              $ref: "#/components/schemas/CheckoutRequest"
       responses:
-        '200':
+        "200":
           description: Booking confirmed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CheckoutResponse'
-        '400':
+                $ref: "#/components/schemas/CheckoutResponse"
+        "400":
           description: Invalid request
-        '502':
-          description: Hotelbeds upstream error
+        "502":
+          description: Upstream supplier error
 
   ###############################################################
   #  Reservation Get
   ###############################################################
-
   /reservation/get:
     post:
       operationId: getReservation
@@ -131,85 +132,92 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReservationGetRequest'
+              $ref: "#/components/schemas/ReservationGetRequest"
       responses:
-        '200':
-          description: Reservation retrieved
+        "200":
+          description: Reservation found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReservationGetResponse'
-        '404':
+                $ref: "#/components/schemas/ReservationGetResponse"
+        "404":
           description: Reservation not found
 
   ###############################################################
-  #  Reservation Cancellation
+  #  Reservation Cancel
   ###############################################################
-
   /reservation/cancel:
     post:
       operationId: cancelReservation
-      summary: Cancel an existing reservation
+      summary: Cancel an existing reservation or compute penalties in dry-run mode
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReservationCancelRequest'
+              $ref: "#/components/schemas/ReservationCancelRequest"
       responses:
-        '200':
-          description: Cancelled or dry-run penalty quote
+        "200":
+          description: Cancellation result
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReservationCancelResponse'
-        '404':
+                $ref: "#/components/schemas/ReservationCancelResponse"
+        "404":
           description: Reservation not found
 
   ###############################################################
   #  Reservation Modify
   ###############################################################
-
   /reservation/modify:
     post:
       operationId: modifyReservation
-      summary: Modify an existing reservation
+      summary: Modify an existing reservation (supports dry-run)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ReservationModifyRequest'
+              $ref: "#/components/schemas/ReservationModifyRequest"
       responses:
-        '200':
-          description: Modification result (dry-run or completed)
+        "200":
+          description: Modification completed or quoted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReservationModifyResponse'
-        '404':
+                $ref: "#/components/schemas/ReservationModifyResponse"
+        "404":
           description: Reservation not found
 
 
 ###############################################################
 #  COMPONENT SCHEMAS
 ###############################################################
-
 components:
+
+  ###############################################################
+  # SECURITY
+  ###############################################################
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
 
     ###############################################################
     # HOTEL FEED
     ###############################################################
-
     HotelFeedResponse:
       type: object
       properties:
-        count: { type: integer }
+        count:
+          type: integer
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Hotel'
+            $ref: "#/components/schemas/Hotel"
 
     Hotel:
       type: object
@@ -226,10 +234,238 @@ components:
         rooms:
           type: array
           items:
-            $ref: '#/components/schemas/HotelRoom'
-        source:
+            $ref: "#/components/schemas/HotelRoom"
+
+    HotelRoom:
+      type: object
+      properties:
+        name: { type: string }
+        rates:
+          type: array
+          items:
+            $ref: "#/components/schemas/HotelRate"
+
+    HotelRate:
+      type: object
+      properties:
+        rateKey: { type: string }
+        net: { type: number }
+        sellingRate: { type: number }
+        board: { type: string }
+        paymentType: { type: string }
+
+    ###############################################################
+    # HOTEL DETAILS
+    ###############################################################
+    HotelDetails:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        address: { type: string }
+        images:
+          type: array
+          items: { type: string }
+        facilities:
+          type: array
+          items: { type: string }
+        rooms:
+          type: array
+          items:
+            $ref: "#/components/schemas/HotelDetailsRoom"
+
+    HotelDetailsRoom:
+      type: object
+      properties:
+        code: { type: string }
+        name: { type: string }
+        description: { type: string }
+        images:
+          type: array
+          items: { type: string }
+
+    ###############################################################
+    # AVAILABILITY
+    ###############################################################
+    AvailabilityRequest:
+      type: object
+      required: [hotelId, checkIn, checkOut, occupancies]
+      properties:
+        hotelId: { type: integer }
+        checkIn: { type: string, format: date }
+        checkOut: { type: string, format: date }
+        occupancies:
+          type: array
+          items:
+            $ref: "#/components/schemas/OccupancyRequest"
+
+    OccupancyRequest:
+      type: object
+      properties:
+        roomId: { type: string }
+        paxes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pax"
+
+    Pax:
+      type: object
+      properties:
+        type: { type: string, enum: [AD, CH] }
+        age: { type: integer }
+        name: { type: string }
+        surname: { type: string }
+
+    AvailabilityResponse:
+      type: object
+      properties:
+        hotelId: { type: integer }
+        hotelName: { type: string }
+        currency: { type: string }
+        checkIn: { type: string, format: date }
+        checkOut: { type: string, format: date }
+        rates:
+          type: array
+          items:
+            $ref: "#/components/schemas/AvailabilityRate"
+
+    AvailabilityRate:
+      type: object
+      properties:
+        roomCode: { type: string }
+        board: { type: string }
+        rateKey: { type: string }
+        net: { type: number }
+        sellingRate: { type: number }
+        paymentType: { type: string }
+
+    ###############################################################
+    # CHECKOUT
+    ###############################################################
+    CheckoutRequest:
+      type: object
+      required:
+        [hotelId, rateKey, checkIn, checkOut, paymentToken, holder, occupancies]
+      properties:
+        hotelId: { type: integer }
+        rateKey: { type: string }
+        checkIn: { type: string, format: date }
+        checkOut: { type: string, format: date }
+        paymentToken: { type: string }
+        holder:
+          $ref: "#/components/schemas/Holder"
+        occupancies:
+          type: array
+          items:
+            $ref: "#/components/schemas/OccupancyRequest"
+
+    Holder:
+      type: object
+      properties:
+        name: { type: string }
+        surname: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+
+    CheckoutResponse:
+      type: object
+      properties:
+        reservation:
+          $ref: "#/components/schemas/Reservation"
+
+    ###############################################################
+    # RESERVATION OBJECT
+    ###############################################################
+    Reservation:
+      type: object
+      properties:
+        id: { type: string }
+        resourceType: { type: string }
+        supplier: { type: string }
+        environment: { type: string }
+        status: { type: string }
+        hotel:
           type: object
           properties:
+            id: { type: string }
+            name: { type: string }
+        stay:
+          type: object
+          properties:
+            checkIn: { type: string, format: date }
+            checkOut: { type: string, format: date }
+        pricing:
+          type: object
+          properties:
+            total: { type: number }
+            currency: { type: string }
+        userId: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    ###############################################################
+    # RESERVATION GET
+    ###############################################################
+    ReservationGetRequest:
+      type: object
+      required: [reference]
+      properties:
+        reference: { type: string }
+        refreshFromSupplier: { type: boolean }
+
+    ReservationGetResponse:
+      type: object
+      properties:
+        reservation:
+          $ref: "#/components/schemas/Reservation"
+
+    ###############################################################
+    # RESERVATION CANCEL
+    ###############################################################
+    ReservationCancelRequest:
+      type: object
+      required: [reference]
+      properties:
+        reference: { type: string }
+        dryRun: { type: boolean }
+
+    ReservationCancelResponse:
+      type: object
+      properties:
+        reservation:
+          $ref: "#/components/schemas/Reservation"
+        cancellation_result:
+          type: object
+          properties:
+            status: { type: string }
+            refundable_amount: { type: number }
+            penalty_amount: { type: number }
+            currency: { type: string }
+            dry_run: { type: boolean }
+
+    ###############################################################
+    # RESERVATION MODIFY
+    ###############################################################
+    ReservationModifyRequest:
+      type: object
+      required: [reference, checkIn, checkOut]
+      properties:
+        reference: { type: string }
+        checkIn: { type: string, format: date }
+        checkOut: { type: string, format: date }
+        dryRun: { type: boolean }
+
+    ReservationModifyResponse:
+      type: object
+      properties:
+        old_reservation:
+          $ref: "#/components/schemas/Reservation"
+        new_reservation:
+          nullable: true
+          $ref: "#/components/schemas/Reservation"
+        price_difference: { type: number }
+        dry_run: { type: boolean }
             provider: { type: string }
             version: { type: string }
             normalizedAt: { type: string, format: date-time }
