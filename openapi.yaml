@@ -12,8 +12,6 @@ info:
 servers:
   - url: https://uncodified-maricela-unhectic.ngrok-free.dev
 
-security:
-  - bearerAuth: []
 
 paths:
 
@@ -169,12 +167,6 @@ paths:
           description: Reservation not found
 
 components:
-
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
 
   schemas:
 
