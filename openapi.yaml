@@ -3,18 +3,20 @@ openapi: 3.1.1
 info:
   title: Hotel Feed & Reservation API
   description: >
-    Provides normalized hotel listings, availability search,
-    checkout, and reservation management for ACP agent integrations.
-  version: 1.1.0
+    ACP-compatible hotel feed, availability search, checkout creation,
+    and full reservation lifecycle (retrieval, modification, cancellation).
+  version: 2.0.0
   contact:
     email: support@yourdomain.com
 
 servers:
   - url: https://uncodified-maricela-unhectic.ngrok-free.dev
 
-
 paths:
 
+  #######################################################################
+  # HOTEL FEED
+  #######################################################################
   /hotels/feed:
     get:
       operationId: getHotelsFeed
@@ -22,18 +24,13 @@ paths:
       parameters:
         - name: destination
           in: query
-          schema:
-            type: string
+          schema: { type: string }
         - name: checkIn
           in: query
-          schema:
-            type: string
-            format: date
+          schema: { type: string, format: date }
         - name: checkOut
           in: query
-          schema:
-            type: string
-            format: date
+          schema: { type: string, format: date }
       responses:
         "200":
           description: Normalized hotel feed
@@ -42,6 +39,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/HotelFeedResponse"
 
+  #######################################################################
+  # HOTEL DETAILS
+  #######################################################################
   /hotels/{hotel_id}/details:
     get:
       operationId: getHotelDetails
@@ -50,8 +50,7 @@ paths:
         - name: hotel_id
           in: path
           required: true
-          schema:
-            type: integer
+          schema: { type: integer }
       responses:
         "200":
           description: Hotel details found
@@ -62,10 +61,13 @@ paths:
         "404":
           description: Hotel not found
 
+  #######################################################################
+  # AVAILABILITY SEARCH
+  #######################################################################
   /availability/search:
     post:
       operationId: searchAvailability
-      summary: Search availability for a specific hotel
+      summary: Search availability and retrieve rateKeys
       requestBody:
         required: true
         content:
@@ -81,13 +83,14 @@ paths:
                 $ref: "#/components/schemas/AvailabilityResponse"
         "404":
           description: No availability found
-        "500":
-          description: Server error
 
+  #######################################################################
+  # CHECKOUT
+  #######################################################################
   /checkout/create:
     post:
       operationId: createCheckout
-      summary: Create a reservation using a Hotelbeds rateKey
+      summary: Create a reservation using a Hotelbeds rateKey (ACP Unified Checkout)
       requestBody:
         required: true
         content:
@@ -104,8 +107,11 @@ paths:
         "400":
           description: Invalid request
         "502":
-          description: Supplier error
+          description: Upstream supplier error
 
+  #######################################################################
+  # RESERVATION GET
+  #######################################################################
   /reservation/get:
     post:
       operationId: getReservation
@@ -126,10 +132,13 @@ paths:
         "404":
           description: Reservation not found
 
+  #######################################################################
+  # RESERVATION CANCEL
+  #######################################################################
   /reservation/cancel:
     post:
       operationId: cancelReservation
-      summary: Cancel an existing reservation or compute penalties in dry-run mode
+      summary: Cancel a reservation or compute penalties in dry-run mode
       requestBody:
         required: true
         content:
@@ -146,10 +155,13 @@ paths:
         "404":
           description: Reservation not found
 
+  #######################################################################
+  # RESERVATION MODIFY
+  #######################################################################
   /reservation/modify:
     post:
       operationId: modifyReservation
-      summary: Modify an existing reservation (supports dry-run)
+      summary: Modify a reservation (supports dry-run)
       requestBody:
         required: true
         content:
@@ -158,7 +170,7 @@ paths:
               $ref: "#/components/schemas/ReservationModifyRequest"
       responses:
         "200":
-          description: Modification completed or quoted
+          description: Modification result
           content:
             application/json:
               schema:
@@ -166,10 +178,23 @@ paths:
         "404":
           description: Reservation not found
 
+
+#######################################################################
+# COMPONENTS
+#######################################################################
 components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
   schemas:
 
+    ###################################################################
+    # HOTEL FEED
+    ###################################################################
     HotelFeedResponse:
       type: object
       properties:
@@ -214,6 +239,9 @@ components:
         board: { type: string }
         paymentType: { type: string }
 
+    ###################################################################
+    # HOTEL DETAILS
+    ###################################################################
     HotelDetails:
       type: object
       properties:
@@ -242,6 +270,9 @@ components:
           type: array
           items: { type: string }
 
+    ###################################################################
+    # AVAILABILITY
+    ###################################################################
     AvailabilityRequest:
       type: object
       required: [hotelId, checkIn, checkOut, occupancies]
@@ -294,6 +325,9 @@ components:
         sellingRate: { type: number }
         paymentType: { type: string }
 
+    ###################################################################
+    # CHECKOUT (ACP Unified Checkout)
+    ###################################################################
     CheckoutRequest:
       type: object
       required:
@@ -316,7 +350,7 @@ components:
       properties:
         name: { type: string }
         surname: { type: string }
-        email: { type: string, format: email }
+        email: { type: string }
         phone: { type: string }
 
     CheckoutResponse:
@@ -325,8 +359,13 @@ components:
         reservation:
           $ref: "#/components/schemas/Reservation"
 
+    ###################################################################
+    # ACP RESERVATION (Expanded User Profile)
+    ###################################################################
     Reservation:
       type: object
+      required:
+        [id, resourceType, supplier, environment, status, hotel, stay, pricing, user]
       properties:
         id: { type: string }
         resourceType: { type: string }
@@ -348,10 +387,19 @@ components:
           properties:
             total: { type: number }
             currency: { type: string }
-        userId: { type: string }
+        user:
+          type: object
+          properties:
+            id: { type: string }
+            name: { type: string }
+            email: { type: string }
+            phone: { type: string }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
 
+    ###################################################################
+    # RESERVATION GET
+    ###################################################################
     ReservationGetRequest:
       type: object
       required: [reference]
@@ -365,6 +413,9 @@ components:
         reservation:
           $ref: "#/components/schemas/Reservation"
 
+    ###################################################################
+    # RESERVATION CANCEL
+    ###################################################################
     ReservationCancelRequest:
       type: object
       required: [reference]
@@ -386,6 +437,9 @@ components:
             currency: { type: string }
             dry_run: { type: boolean }
 
+    ###################################################################
+    # RESERVATION MODIFY
+    ###################################################################
     ReservationModifyRequest:
       type: object
       required: [reference, checkIn, checkOut]
