@@ -1,0 +1,202 @@
+openapi: 3.1.0
+info:
+  title: Hotel Authentication Service
+  description: Passwordless email authentication API for hotel reservation access.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: test@example.com
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    LoginResponse:
+      type: object
+      properties:
+        magic_link_url:
+          type: string
+          format: uri
+          example: http://localhost:5000/auth/verify?token=abc123
+
+    TokenExchangeRequest:
+      type: object
+      required:
+        - auth_code
+      properties:
+        auth_code:
+          type: string
+          example: "762b2260-ab79-4748-87ea-f14a207d0b80"
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+      example:
+        access_token: "eyJhbGci...AAA"
+        refresh_token: "eyJhbGci...BBB"
+
+    MeResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          example: test@example.com
+        role:
+          type: string
+          example: user
+
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+
+paths:
+
+  /auth/login:
+    post:
+      summary: Request a magic login link to email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Magic link sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          description: Email missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/verify:
+    get:
+      summary: Verify magic link token (browser use only)
+      description: Displays login success page and issues auth_code
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful verification (HTML response)
+          content:
+            text/html:
+              schema:
+                type: string
+        "401":
+          description: Invalid or expired magic link token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/token-exchange:
+    post:
+      summary: Exchange auth_code for tokens (GPT only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenExchangeRequest"
+      responses:
+        "200":
+          description: Tokens successfully exchanged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          description: Invalid auth_code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: User identity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/refresh:
+    post:
+      summary: Refresh an access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+      responses:
+        "200":
+          description: New tokens issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          description: Invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"

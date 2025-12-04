@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Hotel Account Login",
+  "name_for_model": "hotel_auth",
+  "description_for_human": "Sign in to access hotel reservations with a secure magic link.",
+  "description_for_model": "Authentication service for obtaining JWT access tokens and user identity.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:5000/openapi.yaml",
+    "has_user_authentication": true
+  },
+  "contact_email": "support@example.com",
+  "legal_info_url": "http://example.com/legal"
+}
