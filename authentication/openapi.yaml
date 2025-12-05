@@ -86,11 +86,11 @@ components:
       properties:
         error:
           type: string
-
 paths:
 
   /auth/login:
     post:
+      operationId: login
       summary: Request a magic login link to email
       requestBody:
         required: true
@@ -114,8 +114,8 @@ paths:
 
   /auth/verify:
     get:
+      operationId: verifyMagicLink
       summary: Verify magic link token (browser use only)
-      description: Displays login success page and issues auth_code
       parameters:
         - name: token
           in: query
@@ -138,6 +138,7 @@ paths:
 
   /auth/token-exchange:
     post:
+      operationId: exchangeAuthCode
       summary: Exchange auth_code for tokens (GPT only)
       requestBody:
         required: true
@@ -161,6 +162,7 @@ paths:
 
   /auth/me:
     get:
+      operationId: getCurrentUser
       security:
         - bearerAuth: []
       summary: Get current authenticated user
@@ -180,6 +182,7 @@ paths:
 
   /auth/refresh:
     post:
+      operationId: refreshAccessToken
       summary: Refresh an access token
       requestBody:
         required: true
@@ -200,3 +203,4 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
