@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://uncodified-maricela-unhectic.ngrok-free.dev
+  - url: https://tackle-chips-fragrances-customers.trycloudflare.com/
     description: Local development server
 
 components:
