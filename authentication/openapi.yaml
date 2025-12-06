@@ -14,9 +14,11 @@ security:
 components:
   securitySchemes:
     bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: /auth/token-exchange
+          scopes: {}
 
   schemas:
     LoginRequest:
