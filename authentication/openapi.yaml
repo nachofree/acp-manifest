@@ -8,6 +8,9 @@ servers:
   - url: https://tackle-chips-fragrances-customers.trycloudflare.com/
     description: Local development server
 
+security:
+  - bearerAuth: []
+
 components:
   securitySchemes:
     bearerAuth:
@@ -138,7 +141,9 @@ paths:
 
   /auth/token-exchange:
     post:
-      operationId: exchangeAuthCode
+      operationId: authorizeWithAuthCode
+      security:
+        - bearerAuth: []
       summary: Exchange auth_code for tokens (GPT only)
       requestBody:
         required: true
@@ -163,8 +168,6 @@ paths:
   /auth/me:
     get:
       operationId: getCurrentUser
-      security:
-        - bearerAuth: []
       summary: Get current authenticated user
       responses:
         "200":
