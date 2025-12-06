@@ -35,13 +35,6 @@ components:
         message:
           type: string
 
-    LoginResponse:
-      type: object
-      properties:
-        magic_link_url:
-          type: string
-          format: uri
-          example: http://localhost:5000/auth/verify?token=abc123
 
     TokenExchangeRequest:
       type: object
@@ -107,7 +100,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginResponse"
+                $ref: "#/components/schemas/MessageResponse"
         "400":
           description: Email missing or invalid
           content:
