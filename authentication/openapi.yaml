@@ -134,31 +134,30 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /auth/token-exchange:
-    post:
-      operationId: authorizeWithAuthCode
-      security:
-        - bearerAuth: []
-      summary: Exchange auth_code for tokens (GPT only)
-      requestBody:
-        required: true
+/auth/token-exchange:
+  post:
+    operationId: loginWithAuthCode
+    summary: Exchange auth_code for tokens (GPT only)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TokenExchangeRequest"
+    responses:
+      "200":
+        description: Tokens successfully exchanged
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TokenExchangeRequest"
-      responses:
-        "200":
-          description: Tokens successfully exchanged
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TokenResponse"
-        "401":
-          description: Invalid auth_code
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+              $ref: "#/components/schemas/TokenResponse"
+      "401":
+        description: Invalid auth_code
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ErrorResponse"
+
 
   /auth/me:
     get:
