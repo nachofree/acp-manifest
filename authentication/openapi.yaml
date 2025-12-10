@@ -14,11 +14,10 @@ security:
 components:
   securitySchemes:
     bearerAuth:
-      type: oauth2
-      flows:
-        password:
-          tokenUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/token-exchange
-          scopes: {}
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 
 
   schemas:
@@ -171,6 +170,13 @@ paths:
     get:
       operationId: getCurrentUser
       summary: Get current authenticated user
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
       responses:
         "200":
           description: User identity
