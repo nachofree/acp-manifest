@@ -16,6 +16,8 @@ components:
           authorizationUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/login-page
           tokenUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/callback-validate
           scopes: {}
+  schemas: {}
+
 
 security:
   - oauth2: []
