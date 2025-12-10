@@ -5,7 +5,7 @@ info:
   description: Authentication for hotel reservation access via ChatGPT.
 
 servers:
-  - url: https://tackle-chips-fragrances-customers.trycloudflare.com/
+  - url: http://fooauth.thegummibear.com:8000/
 
 components:
   securitySchemes:
@@ -13,8 +13,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/login-page
-          tokenUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/token-exchange
+          authorizationUrl: http://fooauth.thegummibear.com:8000/auth/login-page
+          tokenUrl: http://fooauth.thegummibear.com:8000/auth/token-exchange
           scopes: {}
   schemas:
     ErrorResponse:
