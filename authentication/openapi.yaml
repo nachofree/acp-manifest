@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Hotel Authentication Service
   version: 1.0.0
-  description: Sign-in required to access hotel reservations through ChatGPT.
+  description: Authentication required to access hotel reservations via ChatGPT.
 
 servers:
   - url: https://tackle-chips-fragrances-customers.trycloudflare.com/
@@ -17,7 +17,6 @@ components:
           tokenUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/callback-validate
           scopes: {}
   schemas: {}
-
 
 security:
   - oauth2: []
@@ -38,49 +37,30 @@ paths:
   /auth/callback-validate:
     post:
       operationId: completeOAuthLogin
-      summary: Validate callback code and issue tokens
+      summary: Validate callback and issue tokens
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [code]
+              required:
+                - code
               properties:
                 code:
                   type: string
       responses:
         "200":
-          description: OAuth login complete
+          description: Login complete
           content:
             application/json:
               schema:
                 type: object
-                properties:
-                  access_token:
-                    type: string
-                  refresh_token:
-                    type: string
-                  token_type:
-                    type: string
-                  expires_in:
-                    type: integer
 
   /auth/me:
     get:
       operationId: getCurrentUser
-      summary: Get the identity of the logged-in user
+      summary: Get identity of logged-in user
       responses:
         "200":
           description: Authenticated identity
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user_id:
-                    type: integer
-                  email:
-                    type: string
-        "401":
-          description: Not authenticated
