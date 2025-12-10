@@ -13,6 +13,14 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    MeResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        email:
+          type: string
 security:
   - bearerAuth: []
 
