@@ -17,8 +17,9 @@ components:
       type: oauth2
       flows:
         password:
-          tokenUrl: /auth/token-exchange
+          tokenUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/token-exchange
           scopes: {}
+
 
   schemas:
     LoginRequest:
