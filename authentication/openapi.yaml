@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Hotel Authentication Service
   version: 1.0.0
-  description: Authentication required to access hotel reservations via ChatGPT.
+  description: Authentication for hotel reservation access via ChatGPT.
 
 servers:
   - url: https://tackle-chips-fragrances-customers.trycloudflare.com/
@@ -13,25 +13,44 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+
   schemas:
-    MeResponse:
+    OAuthCallbackResponse:
       type: object
       properties:
-        user_id:
-          type: integer
-        email:
+        access_token:
           type: string
-security:
-  - bearerAuth: []
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            email:
+              type: string
+      required: [access_token, token_type]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
 
 paths:
+
   /auth/login-page:
     get:
       operationId: startLogin
-      summary: Start browser-based login (browser only)
+      summary: Start login in user's browser
+      description: Browser opens for user to input email.
       responses:
         "200":
-          description: Login page HTML
+          description: Login page HTML content
           content:
             text/html:
               schema:
@@ -40,7 +59,8 @@ paths:
   /auth/callback-validate:
     post:
       operationId: completeOAuthLogin
-      summary: Validate callback and issue tokens
+      summary: Validate login and issue tokens
+      security: []   # GPT calls this anonymously
       requestBody:
         required: true
         content:
@@ -54,42 +74,39 @@ paths:
                   type: string
       responses:
         "200":
-          description: Login complete
+          description: Login completed and tokens stored
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                  refresh_token:
-                    type: string
-                  token_type:
-                    type: string
-                  expires_in:
-                    type: integer
-                  user:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      email:
-                        type: string
+                $ref: "#/components/schemas/OAuthCallbackResponse"
         "401":
-          description: Invalid login code
+          description: Invalid or expired code
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
+                $ref: "#/components/schemas/ErrorResponse"
 
   /auth/me:
     get:
       operationId: getCurrentUser
-      summary: Get identity of logged-in user
+      summary: Get current authenticated user
+      security:
+        - bearerAuth: []   # GPT MUST attach the token
       responses:
         "200":
           description: Authenticated identity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                  email:
+                    type: string
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
