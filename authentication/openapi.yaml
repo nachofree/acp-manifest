@@ -97,7 +97,7 @@ paths:
       operationId: getCurrentUser
       summary: Get current authenticated user
       security:
-        - bearerAuth: []   # GPT MUST attach the token
+        - oauth2: []   # GPT MUST attach the token
       responses:
         "200":
           description: Authenticated identity
