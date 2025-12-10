@@ -1,217 +1,84 @@
 openapi: 3.1.0
 info:
   title: Hotel Authentication Service
-  description: Passwordless email authentication API for hotel reservation access.
   version: 1.0.0
+  description: Sign-in required to access hotel reservations through ChatGPT.
 
 servers:
   - url: https://tackle-chips-fragrances-customers.trycloudflare.com/
-    description: Local development server
-
-security:
-  - bearerAuth: []
 
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/login-page
+          tokenUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/callback-validate
+          scopes: {}
 
+security:
+  - oauth2: []
 
-
-  schemas:
-    LoginRequest:
-      type: object
-      required:
-        - email
-      properties:
-        email:
-          type: string
-          format: email
-          example: test@example.com
-
-    MessageResponse:
-      type: object
-      properties:
-        message:
-          type: string
-
-
-    TokenExchangeRequest:
-      type: object
-      required:
-        - auth_code
-      properties:
-        auth_code:
-          type: string
-          example: "762b2260-ab79-4748-87ea-f14a207d0b80"
-
-    TokenResponse:
-      type: object
-      required:
-        - access_token
-        - token_type
-      properties:
-        access_token:
-          type: string
-        token_type:
-          type: string
-          example: Bearer
-        refresh_token:
-          type: string
-        expires_in:
-          type: integer
-          example: 900
-
-
-    MeResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-          example: 1
-        email:
-          type: string
-          example: test@example.com
-        role:
-          type: string
-          example: user
-
-    RefreshRequest:
-      type: object
-      required:
-        - refresh_token
-      properties:
-        refresh_token:
-          type: string
-
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
 paths:
-
-  /auth/login:
-    post:
-      operationId: login
-      summary: Request a magic login link to email
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
-      responses:
-        "200":
-          description: Magic link sent successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MessageResponse"
-        "400":
-          description: Email missing or invalid
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
-  /auth/verify:
+  /auth/login-page:
     get:
-      operationId: verifyMagicLink
-      summary: Verify magic link token (browser use only)
-      parameters:
-        - name: token
-          in: query
-          required: true
-          schema:
-            type: string
+      operationId: startLogin
+      summary: Start browser-based login (browser only)
       responses:
         "200":
-          description: Successful verification (HTML response)
+          description: Login page HTML
           content:
             text/html:
               schema:
                 type: string
-        "401":
-          description: Invalid or expired magic link token
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
 
-  /auth/token-exchange:
+  /auth/callback-validate:
     post:
-      operationId: loginWithAuthCode
-      summary: Exchange auth_code for tokens (GPT only)
+      operationId: completeOAuthLogin
+      summary: Validate callback code and issue tokens
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TokenExchangeRequest"
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
       responses:
         "200":
-          description: Tokens successfully exchanged
+          description: OAuth login complete
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TokenResponse"
-        "401":
-          description: Invalid auth_code
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  token_type:
+                    type: string
+                  expires_in:
+                    type: integer
 
   /auth/me:
     get:
       operationId: getCurrentUser
-      summary: Get current authenticated user
-      parameters:
-        - name: Authorization
-          in: header
-          required: true
-          schema:
-            type: string
-            example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      summary: Get the identity of the logged-in user
       responses:
         "200":
-          description: User identity
+          description: Authenticated identity
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MeResponse"
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                  email:
+                    type: string
         "401":
-          description: Missing or invalid token
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
-  /auth/refresh:
-    post:
-      operationId: refreshAccessToken
-      summary: Refresh an access token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RefreshRequest"
-      responses:
-        "200":
-          description: New tokens issued
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TokenResponse"
-        "401":
-          description: Invalid refresh token
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
+          description: Not authenticated
