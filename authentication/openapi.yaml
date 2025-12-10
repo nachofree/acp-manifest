@@ -9,12 +9,16 @@ servers:
 
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    oauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/login-page
+          tokenUrl: https://tackle-chips-fragrances-customers.trycloudflare.com/auth/token-exchange
+          scopes: {}
 security:
-  - bearerAuth: []
+  - oauth2: []
+
   
   schemas:
     OAuthCallbackResponse:
