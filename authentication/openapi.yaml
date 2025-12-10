@@ -77,30 +77,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /auth/me:
-    get:
-      operationId: getCurrentUser
-      summary: Get current authenticated user
-      security:
-        - oauth2: []
-      responses:
-        "200":
-          description: Authenticated identity
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user_id:
-                    type: integer
-                  email:
-                    type: string
-        "401":
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+
   /auth/token-exchange:
     post:
       operationId: tokenExchange
@@ -147,3 +124,27 @@ paths:
         "401":
           description: Invalid or expired code
 
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      summary: Get current authenticated user
+      security:
+        - oauth2: []
+      responses:
+        "200":
+          description: Authenticated identity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                  email:
+                    type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
