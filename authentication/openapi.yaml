@@ -49,14 +49,21 @@ components:
 
     TokenResponse:
       type: object
+      required:
+        - access_token
+        - token_type
       properties:
         access_token:
           type: string
+        token_type:
+          type: string
+          example: Bearer
         refresh_token:
           type: string
-      example:
-        access_token: "eyJhbGci...AAA"
-        refresh_token: "eyJhbGci...BBB"
+        expires_in:
+          type: integer
+          example: 900
+
 
     MeResponse:
       type: object
