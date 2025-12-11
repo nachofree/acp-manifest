@@ -10,7 +10,7 @@ info:
     email: support@yourdomain.com
 
 servers:
-  - url: https://acp.thegummibear.com:9443/
+  - url: https://acp.thegummibear.com/
 
 paths:
 
