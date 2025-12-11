@@ -5,7 +5,7 @@ info:
   description: Authentication for hotel reservation access via ChatGPT.
 
 servers:
-  - url: http://fooauth.thegummibear.com:8000/
+  - url: http://auth.thegummibear.com:9443/
 
 components:
   securitySchemes:
@@ -13,8 +13,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: http://fooauth.thegummibear.com:8000/auth/login-page
-          tokenUrl: http://fooauth.thegummibear.com:8000/auth/token-exchange
+          authorizationUrl: http://auth.thegummibear.com:9443/auth/login-page
+          tokenUrl: http://auth.thegummibear.com:9443/auth/token-exchange
           scopes: {}
   schemas:
     ErrorResponse:
