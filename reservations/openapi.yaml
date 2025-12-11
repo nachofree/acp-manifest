@@ -10,7 +10,7 @@ info:
     email: support@yourdomain.com
 
 servers:
-  - url: https://around-pulling-silent-reaches.trycloudflare.com/
+  - url: https://acp.thegummibear.com:9443/
 
 paths:
 
