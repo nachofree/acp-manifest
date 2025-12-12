@@ -21,6 +21,8 @@ paths:
     get:
       operationId: getHotelsFeed
       summary: Get normalized hotel feed
+      description: >
+        Public endpoint. Does not require authentication.
       parameters:
         - name: destination
           in: query
@@ -46,6 +48,8 @@ paths:
     get:
       operationId: getHotelDetails
       summary: Get detailed hotel content
+      description: >
+        Public endpoint. Does not require authentication.
       parameters:
         - name: hotel_id
           in: path
@@ -68,6 +72,8 @@ paths:
     post:
       operationId: searchAvailability
       summary: Search availability and retrieve rateKeys
+      description: >
+        Public endpoint. Does not require authentication.
       requestBody:
         required: true
         content:
@@ -91,6 +97,11 @@ paths:
     post:
       operationId: createCheckout
       summary: Create a reservation using a Hotelbeds rateKey (ACP Unified Checkout)
+      description: >
+        Protected operation. Requires Authorization header.
+
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -116,6 +127,10 @@ paths:
     post:
       operationId: getReservation
       summary: Retrieve an existing reservation
+      description: >
+        Protected operation. Requires Authorization header.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -139,6 +154,10 @@ paths:
     post:
       operationId: cancelReservation
       summary: Cancel a reservation or compute penalties in dry-run mode
+      description: >
+        Protected operation. Requires Authorization header.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -162,6 +181,10 @@ paths:
     post:
       operationId: modifyReservation
       summary: Modify a reservation (supports dry-run)
+      description: >
+        Protected operation. Requires Authorization header.
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -178,68 +201,8 @@ paths:
         "404":
           description: Reservation not found
 
-  ########
-  # Authenticate
-  ########
-  /auth/login:
-    post:
-      operationId: login
-      summary: Login and receive JWT tokens
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [email, password]
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-      responses:
-        "200":
-          description: JWT authentication success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  accessToken:
-                    type: string
-                  refreshToken:
-                    type: string
-        "401":
-          description: Invalid credentials
-
-  /auth/refresh:
-    post:
-      operationId: refreshToken
-      summary: Refresh access token using a valid refresh token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [refreshToken]
-              properties:
-                refreshToken:
-                  type: string
-      responses:
-        "200":
-          description: New access token issued
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  accessToken:
-                    type: string
 
 
-security:
-  - bearerAuth: []
 #######################################################################
 # COMPONENTS
 #######################################################################
