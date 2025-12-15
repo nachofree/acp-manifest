@@ -203,6 +203,79 @@ paths:
 
 
 
+  /checkout/intent/create:
+  post:
+    operationId: createBookingIntent
+    summary: Create a booking intent (public, non-binding)
+    description: >
+      Public endpoint. Creates a temporary booking intent that can be
+      resumed after authentication.
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CheckoutIntentRequest"
+    responses:
+      "200":
+        description: Booking intent created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutIntentResponse"
+
+
+  /checkout/intent/resume:
+  post:
+    operationId: resumeBookingIntent
+    summary: Resume and claim a booking intent
+    description: >
+      Protected operation. Requires Authorization header.
+      Claims an existing booking intent and associates it with the user.
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [intent_id]
+            properties:
+              intent_id:
+                type: string
+                format: uuid
+    responses:
+      "200":
+        description: Booking intent resumed
+      "404":
+        description: Intent not found
+      "410":
+        description: Intent expired
+
+
+  /checkout/intent/latest:
+    get:
+      operationId: getLatestBookingIntent
+      summary: Retrieve the user’s latest active booking intent
+      description: >
+        Protected operation. Returns the most recent non-expired
+        booking intent associated with the authenticated user.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Latest intent or null
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  intent:
+                    nullable: true
+                    $ref: "#/components/schemas/CheckoutIntent"
+
+
 #######################################################################
 # COMPONENTS
 #######################################################################
@@ -355,19 +428,26 @@ components:
     CheckoutRequest:
       type: object
       required:
-        [hotelId, rateKey, checkIn, checkOut, paymentToken, holder, occupancies]
+        [hotelId, rateKey, checkIn, checkOut, holder, occupancies]
       properties:
+        intent_id:
+          type: string
+          format: uuid
+          description: Optional booking intent to finalize
         hotelId: { type: integer }
         rateKey: { type: string }
         checkIn: { type: string, format: date }
         checkOut: { type: string, format: date }
-        paymentToken: { type: string }
+        paymentToken:
+          type: string
+          description: Optional when completing an intent
         holder:
           $ref: "#/components/schemas/Holder"
         occupancies:
           type: array
           items:
             $ref: "#/components/schemas/OccupancyRequest"
+
 
     Holder:
       type: object
@@ -483,3 +563,45 @@ components:
           $ref: "#/components/schemas/Reservation"
         price_difference: { type: number }
         dry_run: { type: boolean }
+
+    
+    CheckoutIntentRequest:
+      type: object
+      description: Payload used to create a booking intent
+      properties:
+        hotelId: { type: integer }
+        rateKey: { type: string }
+        checkIn: { type: string, format: date }
+        checkOut: { type: string, format: date }
+        holder:
+          $ref: "#/components/schemas/Holder"
+        occupancies:
+          type: array
+          items:
+            $ref: "#/components/schemas/OccupancyRequest"
+
+    CheckoutIntentResponse:
+      type: object
+      properties:
+        intent_id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+
+    CheckoutIntent:
+      type: object
+      properties:
+        intent_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [draft, claimed, completed, expired]
+        payload:
+          $ref: "#/components/schemas/CheckoutIntentRequest"
+        expires_at:
+          type: string
+          format: date-time
+
