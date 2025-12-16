@@ -1,4 +1,4 @@
-openapi: 3.1.1
+openapi: 3.1.0
 
 info:
   title: Hotel Feed & Reservation API
@@ -204,54 +204,54 @@ paths:
 
 
   /checkout/intent/create:
-  post:
-    operationId: createBookingIntent
-    summary: Create a booking intent (public, non-binding)
-    description: >
-      Public endpoint. Creates a temporary booking intent that can be
-      resumed after authentication.
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/CheckoutIntentRequest"
-    responses:
-      "200":
-        description: Booking intent created
+    post:
+      operationId: createBookingIntent
+      summary: Create a booking intent (public, non-binding)
+      description: >
+        Public endpoint. Creates a temporary booking intent that can be
+        resumed after authentication.
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CheckoutIntentResponse"
+              $ref: "#/components/schemas/CheckoutIntentRequest"
+      responses:
+        "200":
+          description: Booking intent created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutIntentResponse"
 
 
   /checkout/intent/resume:
-  post:
-    operationId: resumeBookingIntent
-    summary: Resume and claim a booking intent
-    description: >
-      Protected operation. Requires Authorization header.
-      Claims an existing booking intent and associates it with the user.
-    security:
-      - bearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required: [intent_id]
-            properties:
-              intent_id:
-                type: string
-                format: uuid
-    responses:
-      "200":
-        description: Booking intent resumed
-      "404":
-        description: Intent not found
-      "410":
-        description: Intent expired
+    post:
+      operationId: resumeBookingIntent
+      summary: Resume and claim a booking intent
+      description: >
+        Protected operation. Requires Authorization header.
+        Claims an existing booking intent and associates it with the user.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [intent_id]
+              properties:
+                intent_id:
+                  type: string
+                  format: uuid
+      responses:
+        "200":
+          description: Booking intent resumed
+        "404":
+          description: Intent not found
+        "410":
+          description: Intent expired
 
 
   /checkout/intent/latest:
@@ -272,8 +272,9 @@ paths:
                 type: object
                 properties:
                   intent:
+                    allOf: 
+                      - $ref: "#/components/schemas/CheckoutIntent"
                     nullable: true
-                    $ref: "#/components/schemas/CheckoutIntent"
 
 
 #######################################################################
