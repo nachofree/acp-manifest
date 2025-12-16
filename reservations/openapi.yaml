@@ -97,8 +97,15 @@ paths:
     post:
       operationId: createCheckout
       summary: Create a reservation using a Hotelbeds rateKey (ACP Unified Checkout)
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
       description: >
-        Protected operation. Requires Authorization header.
+        Protected operation. Requires Authorization header, a valid intent_id in the request body, and an Idempotency-Key header.
+        The same Idempotency-Key must be reused when retrying a failed request.
 
       security:
         - bearerAuth: []
@@ -429,7 +436,7 @@ components:
     CheckoutRequest:
       type: object
       required:
-        [hotelId, rateKey, checkIn, checkOut, holder, occupancies]
+        [hotelId, rateKey, checkIn, checkOut, holder, occupancies, intent_id]
       properties:
         intent_id:
           type: string
