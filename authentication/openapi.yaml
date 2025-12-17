@@ -27,18 +27,6 @@ security:
   - oauth2: []
 
 paths:
-  /auth/login-page:
-    get:
-      operationId: startLogin
-      summary: Start login in user's browser
-      description: Opens an email-based login form for the user.
-      responses:
-        "200":
-          description: Login page HTML
-          content:
-            text/html:
-              schema:
-                type: string
 
   /auth/callback-validate:
     post:
