@@ -284,6 +284,29 @@ paths:
                     nullable: true
 
 
+/checkout/intent/auto-resume:
+  get:
+    operationId: autoResumeIntent
+    summary: Auto-resume user's latest booking intent
+    description: >
+      Protected operation. Automatically finds and returns the user's
+      most recent active booking intent. Triggers authentication if needed.
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Latest intent or null
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                intent:
+                  allOf:
+                    - $ref: "#/components/schemas/CheckoutIntent"
+                  nullable: true
+
+
 #######################################################################
 # COMPONENTS
 #######################################################################
