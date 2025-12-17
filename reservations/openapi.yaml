@@ -23,6 +23,7 @@ paths:
       summary: Get normalized hotel feed
       description: >
         Public endpoint. Does not require authentication.
+      security: []  # ← ADD THIS LINE
       parameters:
         - name: destination
           in: query
@@ -50,6 +51,7 @@ paths:
       summary: Get detailed hotel content
       description: >
         Public endpoint. Does not require authentication.
+      security: []  # ← ADD THIS LINE
       parameters:
         - name: hotel_id
           in: path
@@ -74,6 +76,7 @@ paths:
       summary: Search availability and retrieve rateKeys
       description: >
         Public endpoint. Does not require authentication.
+      security: []  # ← ADD THIS LINE
       requestBody:
         required: true
         content:
