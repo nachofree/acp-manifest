@@ -216,10 +216,11 @@ paths:
   /checkout/intent/create:
     post:
       operationId: createBookingIntent
-      summary: Create a booking intent (public, non-binding)
+      summary: Start a new booking (ALWAYS call this first)
       description: >
-        Public endpoint. Creates a temporary booking intent that can be
-        resumed after authentication.
+        Public endpoint. Creates a booking intent to begin the checkout process.
+        REQUIRED as the first step for all new hotel bookings.
+      security: []
       requestBody:
         required: true
         content:
@@ -227,53 +228,37 @@ paths:
             schema:
               $ref: "#/components/schemas/CheckoutIntentRequest"
       responses:
-        "200":
-          description: Booking intent created
+        "201":
+          description: Booking intent created successfully
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CheckoutIntentResponse"
 
-
-  /checkout/intent/resume:
-    post:
-      operationId: resumeBookingIntent
-      summary: Resume and claim a booking intent
-      description: >
-        Protected operation. Requires Authorization header.
-        Claims an existing booking intent and associates it with the user.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [intent_id]
-              properties:
-                intent_id:
-                  type: string
-                  format: uuid
-      responses:
-        "200":
-          description: Booking intent resumed
-        "404":
-          description: Intent not found
-        "410":
-          description: Intent expired
-
-
   /checkout/intent/auto-resume:
     get:
       operationId: autoResumeIntent
-      summary: Resume booking after authentication (USE THIS)
+      summary: Claim and retrieve booking intent
       description: >
         Protected operation. Finds unclaimed booking intents and claims them
-        for the authenticated user, then returns the most recent intent.
-        This is the PRIMARY endpoint for resuming bookings after sign-in.
+        for the authenticated user. Call this immediately after createBookingIntent
+        to trigger authentication.
       security:
         - bearerAuth: []
+      responses:
+        "200":
+          description: Intent retrieved or null if none found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  intent:
+                    allOf:
+                      - $ref: "#/components/schemas/CheckoutIntent"
+                    nullable: true
+
+
 
 #######################################################################
 # COMPONENTS
