@@ -264,17 +264,6 @@ paths:
           description: Intent expired
 
 
-  /checkout/intent/latest:
-    get:
-      operationId: getLatestBookingIntent
-      summary: Get already-claimed booking intents
-      description: >
-        Protected operation. Returns booking intents that are already 
-        associated with the authenticated user. Does NOT claim unclaimed intents.
-        Use autoResumeIntent instead for post-authentication resumption.
-      security:
-        - bearerAuth: []
-
   /checkout/intent/auto-resume:
     get:
       operationId: autoResumeIntent
