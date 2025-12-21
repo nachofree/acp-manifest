@@ -50,7 +50,9 @@ paths:
       operationId: getHotelDetails
       summary: Get detailed hotel content
       description: >
-        Public endpoint. Does not require authentication.
+        Public endpoint. Returns comprehensive hotel information including
+        name, description, location, facilities, and images. Always display
+        images to help users visualize the hotel.
       security: []  # ← ADD THIS LINE
       parameters:
         - name: hotel_id
