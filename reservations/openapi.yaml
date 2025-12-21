@@ -221,7 +221,9 @@ paths:
       operationId: cancelReservation
       summary: Cancel a reservation or compute penalties in dry-run mode
       description: >
-        Protected operation. Requires Authorization header.
+        Protected operation. When dryRun=true, returns cancellation penalties
+        WITHOUT actually canceling. When dryRun=false, executes the cancellation.
+        ALWAYS call with dryRun=true first to show user the penalties before canceling.
       security:
         - bearerAuth: []
       requestBody:
