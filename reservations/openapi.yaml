@@ -213,106 +213,106 @@ paths:
 
 
 
-    #######################################################################
-    # RESERVATION CANCEL
-    #######################################################################
-    /reservation/cancel:
-      post:
-        operationId: cancelReservation
-        summary: Cancel a reservation or compute penalties in dry-run mode
-        description: >
-          Protected operation. Requires Authorization header.
-        security:
-          - bearerAuth: []
-        requestBody:
-          required: true
+  #######################################################################
+  # RESERVATION CANCEL
+  #######################################################################
+  /reservation/cancel:
+    post:
+      operationId: cancelReservation
+      summary: Cancel a reservation or compute penalties in dry-run mode
+      description: >
+        Protected operation. Requires Authorization header.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservationCancelRequest"
+      responses:
+        "200":
+          description: Cancellation result
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReservationCancelRequest"
-        responses:
-          "200":
-            description: Cancellation result
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/ReservationCancelResponse"
-          "404":
-            description: Reservation not found
+                $ref: "#/components/schemas/ReservationCancelResponse"
+        "404":
+          description: Reservation not found
 
-    #######################################################################
-    # RESERVATION MODIFY
-    #######################################################################
-    /reservation/modify:
-      post:
-        operationId: modifyReservation
-        summary: Modify a reservation (supports dry-run)
-        description: >
-          Protected operation. Requires Authorization header.
-        security:
-          - bearerAuth: []
-        requestBody:
-          required: true
+  #######################################################################
+  # RESERVATION MODIFY
+  #######################################################################
+  /reservation/modify:
+    post:
+      operationId: modifyReservation
+      summary: Modify a reservation (supports dry-run)
+      description: >
+        Protected operation. Requires Authorization header.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReservationModifyRequest"
+      responses:
+        "200":
+          description: Modification result
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReservationModifyRequest"
-        responses:
-          "200":
-            description: Modification result
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/ReservationModifyResponse"
-          "404":
-            description: Reservation not found
+                $ref: "#/components/schemas/ReservationModifyResponse"
+        "404":
+          description: Reservation not found
 
 
 
-    /checkout/intent/create:
-      post:
-        operationId: createBookingIntent
-        summary: Start a new booking (ALWAYS call this first)
-        description: >
-          Public endpoint. Creates a booking intent to begin the checkout process.
-          REQUIRED as the first step for all new hotel bookings.
-        security: []
-        requestBody:
-          required: true
+  /checkout/intent/create:
+    post:
+      operationId: createBookingIntent
+      summary: Start a new booking (ALWAYS call this first)
+      description: >
+        Public endpoint. Creates a booking intent to begin the checkout process.
+        REQUIRED as the first step for all new hotel bookings.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutIntentRequest"
+      responses:
+        "201":
+          description: Booking intent created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CheckoutIntentRequest"
-        responses:
-          "201":
-            description: Booking intent created successfully
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/CheckoutIntentResponse"
+                $ref: "#/components/schemas/CheckoutIntentResponse"
 
-    /checkout/intent/auto-resume:
-      get:
-        operationId: autoResumeIntent
-        summary: Claim and retrieve booking intent
-        description: >
-          Protected operation. Finds unclaimed booking intents and claims them
-          for the authenticated user. Call this immediately after createBookingIntent
-          to trigger authentication.
-        security:
-          - bearerAuth: []
-        responses:
-          "200":
-            description: Intent retrieved or null if none found
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    intent:
-                      allOf:
-                        - $ref: "#/components/schemas/CheckoutIntent"
-                      nullable: true
+  /checkout/intent/auto-resume:
+    get:
+      operationId: autoResumeIntent
+      summary: Claim and retrieve booking intent
+      description: >
+        Protected operation. Finds unclaimed booking intents and claims them
+        for the authenticated user. Call this immediately after createBookingIntent
+        to trigger authentication.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Intent retrieved or null if none found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  intent:
+                    allOf:
+                      - $ref: "#/components/schemas/CheckoutIntent"
+                    nullable: true
 
 
 
