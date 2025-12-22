@@ -1,0 +1,13 @@
+This service processes user-provided search parameters
+(such as destination, dates, and occupancy) solely to
+retrieve hotel availability and pricing from third-party
+providers.
+
+No personal data is stored, sold, or shared beyond what
+is required to fulfill the request.
+
+This service does not collect names, emails, or payment
+information.
+
+Contact: you@yourdomain.com
+
