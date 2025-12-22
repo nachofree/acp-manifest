@@ -393,6 +393,7 @@ components:
         images:
           type: array
           items: { type: string }
+          format: uri
         facilities:
           type: array
           items: { type: string }
@@ -410,6 +411,8 @@ components:
         images:
           type: array
           items: { type: string }
+          format: uri
+
 
     ###################################################################
     # AVAILABILITY
