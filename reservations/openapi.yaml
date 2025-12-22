@@ -23,7 +23,7 @@ paths:
       summary: Get normalized hotel feed
       description: >
         Public endpoint. Does not require authentication.
-      security: []  # ← ADD THIS LINE
+      security: [] 
       parameters:
         - name: destination
           in: query
@@ -53,7 +53,7 @@ paths:
         Public endpoint. Returns comprehensive hotel information including
         name, description, location, facilities, and images. Always display
         images to help users visualize the hotel.
-      security: []  # ← ADD THIS LINE
+      security: [] 
       parameters:
         - name: hotel_id
           in: path
@@ -78,7 +78,7 @@ paths:
       summary: Search availability and retrieve rateKeys
       description: >
         Public endpoint. Does not require authentication.
-      security: []  # ← ADD THIS LINE
+      security: []
       requestBody:
         required: true
         content:
@@ -314,9 +314,9 @@ paths:
                 type: object
                 properties:
                   intent:
-                    allOf:
+                    oneOf:
                       - $ref: "#/components/schemas/CheckoutIntent"
-                    nullable: true
+                      - type: "null"
 
 
 
@@ -606,8 +606,9 @@ components:
         old_reservation:
           $ref: "#/components/schemas/Reservation"
         new_reservation:
-          nullable: true
-          $ref: "#/components/schemas/Reservation"
+          oneOf:
+            - type: "null"
+            - $ref: "#/components/schemas/Reservation"
         price_difference: { type: number }
         dry_run: { type: boolean }
 
