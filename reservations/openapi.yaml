@@ -318,7 +318,44 @@ paths:
                       - $ref: "#/components/schemas/CheckoutIntent"
                       - type: "null"
 
-
+  /payment/create-checkout-session:
+    post:
+      operationId: createPaymentSession
+      summary: Create Stripe payment session
+      description: >
+        Protected operation. Creates a Stripe Checkout session for payment.
+        Returns a checkout_url that user should visit to complete payment.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [intent_id, amount]
+              properties:
+                intent_id:
+                  type: string
+                  format: uuid
+                amount:
+                  type: integer
+                  description: Amount in cents (e.g., 25000 for €250.00)
+      responses:
+        "200":
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  checkout_url:
+                    type: string
+                    description: URL to Stripe checkout page
+                  session_id:
+                    type: string
+                  intent_id:
+                    type: string
 
 #######################################################################
 # COMPONENTS
