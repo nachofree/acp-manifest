@@ -324,7 +324,7 @@ paths:
       summary: Create Stripe payment session
       description: >
         Protected operation. Creates a Stripe Checkout session for payment.
-        Returns a checkout_url that user should visit to complete payment.
+        Gets price from the booking intent payload automatically.
       security:
         - bearerAuth: []
       requestBody:
@@ -333,14 +333,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [intent_id, amount]
+              required: [intent_id]
               properties:
                 intent_id:
                   type: string
                   format: uuid
-                amount:
-                  type: integer
-                  description: Amount in cents (e.g., 25000 for €250.00)
+                  description: Booking intent ID (price is retrieved from intent)
       responses:
         "200":
           description: Checkout session created
@@ -351,12 +349,14 @@ paths:
                 properties:
                   checkout_url:
                     type: string
-                    description: URL to Stripe checkout page
                   session_id:
                     type: string
                   intent_id:
                     type: string
-
+                  amount:
+                    type: number
+                  currency:
+                    type: string
 #######################################################################
 # COMPONENTS
 #######################################################################
@@ -649,15 +649,20 @@ components:
         price_difference: { type: number }
         dry_run: { type: boolean }
 
-    
     CheckoutIntentRequest:
       type: object
-      description: Payload used to create a booking intent
+      required: [hotelId, rateKey, checkIn, checkOut, holder, occupancies, totalPrice, currency]
       properties:
         hotelId: { type: integer }
         rateKey: { type: string }
         checkIn: { type: string, format: date }
         checkOut: { type: string, format: date }
+        totalPrice: 
+          type: number
+          description: Total price for the booking
+        currency:
+          type: string
+          description: Currency code (EUR, USD, etc)
         holder:
           $ref: "#/components/schemas/Holder"
         occupancies:
@@ -665,6 +670,7 @@ components:
           items:
             $ref: "#/components/schemas/OccupancyRequest"
 
+    
     CheckoutIntentResponse:
       type: object
       properties:
